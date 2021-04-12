@@ -25,7 +25,7 @@ Eulerian Video Magnification : 육안으로 볼 수 없는 미묘한 변화들�
 - convert YIQ color space (RGB ↔ YIQ : rgb2ntsc ↔ ntsc2rgb)
 
 <p align='center'>
-  <img src='./image/1.PNG' width="500px">
+  <img src='./image/1.PNG' width="800px">
 </p>
 
 ```matlab
