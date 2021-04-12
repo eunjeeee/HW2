@@ -77,7 +77,6 @@ list4 = impyramid(list3, 'reduce');
 ### TEMPORAL FILTERING
 - fft(Fast Fourier Transform) 을 사용하여 주파수 영역으로 변환
 - 이 신호에 대역 통과 필터 적용
-- 제공된 butterworthBandpassFilter 함수 사용 → 주파수 증폭 후 결과를 원래 신호에 다시 추가
 - 이 비디오에 적합한 필터를 찾아야 함
 
 ```matlab
@@ -101,8 +100,10 @@ end
 ```
 
 ### EXTRACTING THE FREQUENCY BAND OF INTEREST
-
-
+- 제공된 butterworthBandpassFilter 함수 사용 → 주파수 증폭 후 결과를 원래 신호에 다시 추가
+- 동영상의 주파수 대역을 분석해 주파수 대역의 초점을 맞춤
+  - baby 동영상의 경우 First Cutoff Frequency = 0.8, Second Cutoff Frequency = 1 로 설정
+  - face 동영상의 경우 First Cutoff Frequency = 0.6, Second Cutoff Frequency = 0.7 로 설정
 ```matlab
 bp = butterworthBandpassFilter(Fs, 256, 0.83, 1);
 
@@ -135,6 +136,7 @@ function cube_filtered = filter_cube(bp, cube)
 end
 ```
 
+- 
 ### IMAGE RECONSTRUCTION
 
 ```matlab
@@ -168,3 +170,8 @@ end
 
 frame_list_reconstructed(:,:,2:ch,:) = frame_list(:,:,2:ch,:);
 ```
+
+### RESULT
+<p align='center'>
+  <img src='./image/baby2.gif' width="600px">
+</p>
