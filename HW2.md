@@ -9,13 +9,8 @@ Eulerian Video Magnification : 육안으로 볼 수 없는 미묘한 변화들�
 
 
 두 동영상 ( face, baby ) 에서 실험
-
-(1) If your video has color, transform it to an appropriate color space.
-
-(2) Create a Laplacian pyramid for each video frame.
-
-(3) Band-pass filter the time series for each pixel, on all levels of the pyramid.
-
-(4) Magnify bands of interest by some scale.
-
-(5) Reverse the Laplacian pyramid and undo the color transform to obtain the final output.
+1. If your video has color, transform it to an appropriate color space.
+2. Create a Laplacian pyramid for each video frame.
+3. Band-pass filter the time series for each pixel, on all levels of the pyramid.
+4. Magnify bands of interest by some scale.
+5. Reverse the Laplacian pyramid and undo the color transform to obtain the final output.
