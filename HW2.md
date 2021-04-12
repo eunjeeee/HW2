@@ -175,3 +175,6 @@ frame_list_reconstructed(:,:,2:ch,:) = frame_list(:,:,2:ch,:);
 <p align='center'>
   <img src='./image/baby2.gif' width="600px">
 </p>
+<p align='center'>
+  <img src='./image/face.gif' width="600px">
+</p>
