@@ -7,6 +7,10 @@
 
 Eulerian Video Magnification : 육안으로 볼 수 없는 미묘한 변화들을 추출하는 알고리즘
 
+<p align='center'>
+  <img src='./image/original.PNG' width="300px">
+  <p align='center'>움직임이 거의 없는 원 동영상</p>
+</p>
 
 두 동영상 ( face, baby ) 에서 아래와 같은 순서로 진행
 1. If your video has color, transform it to an appropriate color space.
