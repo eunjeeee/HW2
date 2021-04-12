@@ -25,7 +25,8 @@ Eulerian Video Magnification : 육안으로 볼 수 없는 미묘한 변화들�
 - convert YIQ color space (RGB ↔ YIQ : rgb2ntsc ↔ ntsc2rgb)
 
 <p align='center'>
-  <img src='./image/1.PNG' width="800px">
+  <img src='./image/2.PNG' width="400px">
+  <img src='./image/1.PNG' width="600px">
 </p>
 
 ```matlab
@@ -55,4 +56,115 @@ frame = double(frame) / 255;
 frame = rgb2ntsc(frame);
 frame_list(:, :, :, frame_index) = frame(:, :, :);
 [h, w, ch, frame_num] = size(frame_list);
+```
+
+### LAPLACIAN PYRAMID
+- 모든 단일 프레임에 대해 laplacian pyramid 구성
+- gaussian pyramid에서의 차이를 이용
+- w × h → (w/2) × (h/2) 이기 때문에 차이를 계산할 때 upsampling 요구
+- 이 과정을 역으로 수행하면 원본 이미지로 재구성할 수 있음 → 비디오 보강에 활용 가능
+
+```matlab
+list1 = impyramid(frame_list, 'reduce');
+list2 = impyramid(list1, 'reduce');
+list3 = impyramid(list2, 'reduce');
+list4 = impyramid(list3, 'reduce');
+```
+<p align='center'>
+  <img src='./image/3.PNG' width="600px">
+</p>
+
+### TEMPORAL FILTERING
+- fft(Fast Fourier Transform) 을 사용하여 주파수 영역으로 변환
+- 이 신호에 대역 통과 필터 적용
+- 제공된 butterworthBandpassFilter 함수 사용 → 주파수 증폭 후 결과를 원래 신호에 다시 추가
+- 이 비디오에 적합한 필터를 찾아야 함
+
+```matlab
+[h, w, ch, frame_num] = size(frame_list);
+f = Fs * (0:(fix(frame_num/2)))/frame_num;
+
+cube_fft = zeros(fix(frame_num/2)+1, 1);
+cube_pixel = zeros(frame_num, 1);
+
+for i = 1:h
+    for j = 1:w
+        cube_pixel(:,1) = gaussian_0(i,j,1,:);
+        fftx = fft(cube_pixel);
+        
+        P2 = abs(fftx/frame_num);
+        P1 = P2(1:fix(frame_num/2)+1);
+        P1(2:end-1) = 2*P1(2:end-1);
+        cube_fft(:,1) = cube_fft(:,1) + P1(:,1);
+    end
+end
+```
+
+### EXTRACTING THE FREQUENCY BAND OF INTEREST
+
+
+```matlab
+bp = butterworthBandpassFilter(Fs, 256, 0.83, 1);
+
+residual_0_filtered = filter_cube(bp, gaussian_0);
+residual_1_filtered = filter_cube(bp, gaussian_1);
+residual_2_filtered = filter_cube(bp, gaussian_2);
+residual_3_filtered = filter_cube(bp, gaussian_3);
+gaussian_4_filtered = filter_cube(bp, gaussian_4);
+
+clear('bp');
+```
+
+```matlab
+function cube_filtered = filter_cube(bp, cube)
+    [height, width, ch, frame_count] = size(cube);
+
+    cube_filtered = zeros(height, width, ch, frame_count);
+    cube_pixel = zeros(frame_count, 1);
+    
+    Hd_fft = freqz(bp, frame_count);
+
+    for i = 1: height
+        for j = 1: width
+            cube_pixel(:,1) = cube(i,j,1,:);
+            cube_pixel_fft = fft(cube_pixel);
+            cube_pixel_filtered = abs(ifft(cube_pixel_fft .* Hd_fft));
+            cube_filtered(i,j,1,:) = cube_pixel_filtered(:, 1);
+        end
+    end
+end
+```
+
+### IMAGE RECONSTRUCTION
+
+```matlab
+frame_list_reconstructed = zeros(h, w, ch, frame_num);
+alpha_0 = 100;
+alpha_1 = 100;
+alpha_2 = 100;
+alpha_3 = 100;
+alpha_4 = 100;
+
+image_residual_0_re = zeros(size(residual_0_filtered,1), size(residual_0_filtered,2), ch); % re means reconstructed
+image_residual_1_re = zeros(size(residual_1_filtered,1), size(residual_1_filtered,2), ch);
+image_residual_2_re = zeros(size(residual_2_filtered,1), size(residual_2_filtered,2), ch);
+image_residual_3_re = zeros(size(residual_3_filtered,1), size(residual_3_filtered,2), ch);
+image_gaussian_4_re = zeros(size(gaussian_4_filtered,1), size(gaussian_4_filtered,2), ch);
+
+for t = 1: frame_num
+
+    image_residual_0_re(:,:,1) = residual_0_filtered(:,:,1,t);
+    image_residual_1_re(:,:,1) = residual_1_filtered(:,:,1,t);
+    image_residual_2_re(:,:,1) = residual_2_filtered(:,:,1,t);
+    image_residual_3_re(:,:,1) = residual_3_filtered(:,:,1,t);
+    image_gaussian_4_re(:,:,1) = gaussian_4_filtered(:,:,1,t);
+    
+    image_reconstructed_frame = frame_list(:,:,1,t) + alpha_0 * image_residual_0_re + alpha_1 * imresize(image_residual_1_re, 2) + ...
+        + alpha_2 * imresize(image_residual_2_re, 4) + alpha_3 * imresize(image_residual_3_re, [h, w]) + alpha_4 * imresize(image_gaussian_4_re, [h, w]);
+    
+    frame_list_reconstructed(:,:,1,t) = image_reconstructed_frame(:,:,1);
+ 
+end
+
+frame_list_reconstructed(:,:,2:ch,:) = frame_list(:,:,2:ch,:);
 ```
