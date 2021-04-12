@@ -171,10 +171,30 @@ end
 frame_list_reconstructed(:,:,2:ch,:) = frame_list(:,:,2:ch,:);
 ```
 
+```matlab
+for t = 1: frame_num
+    frame_list_reconstructed(:,:,1,t) = imadjust(frame_list_reconstructed(:,:,1,t), stretchlim(frame_list_reconstructed(:,:,1,t)));
+
+    cube_frame(:,:,:) = frame_list_reconstructed(:,:,:,t);
+
+    % YIQ to RGB
+    cube_frame = ntsc2rgb(cube_frame);
+
+    writeVideo(v,cube_frame);
+end
+```
+
 ### RESULT
 <p align='center'>
   <img src='./image/baby2.gif' width="600px">
 </p>
 <p align='center'>
   <img src='./image/face.gif' width="300px">
+</p>
+
+
+### EXTRA CREDIT: CAPTURE AND MOTION-MAGNIFY YOUR OWN VIDEO
+- 
+<p align='center'>
+  <img src='./image/cat.gif' width="500px">
 </p>
