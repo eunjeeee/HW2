@@ -136,7 +136,6 @@ function cube_filtered = filter_cube(bp, cube)
 end
 ```
 
-- 
 ### IMAGE RECONSTRUCTION
 
 ```matlab
@@ -187,8 +186,6 @@ end
 ### RESULT
 <p align='center'>
   <img src='./image/baby2.gif' width="600px">
-</p>
-<p align='center'>
   <img src='./image/face.gif' width="300px">
 </p>
 
