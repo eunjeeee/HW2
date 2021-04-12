@@ -24,6 +24,10 @@ Eulerian Video Magnification : 육안으로 볼 수 없는 미묘한 변화들�
 - convert double-precision in the range [0,1]
 - convert YIQ color space (RGB ↔ YIQ : rgb2ntsc ↔ ntsc2rgb)
 
+<p align='center'>
+  <img src='./image/1.PNG' width="500px">
+</p>
+
 ```matlab
 video = VideoReader('data/baby2.mp4');
 %video = VideoReader('data/face.mp4');
